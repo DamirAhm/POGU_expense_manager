@@ -3,15 +3,35 @@ import 'package:test_app/modules/models/Account.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class NewAccountModal extends StatefulWidget {
-  final Function(Account) _addAccount;
+  NewAccountModal(
+      {required Function(Account) onSubmit,
+      required Function(String) validateAccountName,
+      Account? initialState,
+      bool autoFocus = true})
+      : _onSubmit = onSubmit,
+        _validateAccountName = validateAccountName,
+        _initialState = initialState,
+        _autoFocus = autoFocus;
+
+  final Function(Account) _onSubmit;
   final Function(String) _validateAccountName;
-  NewAccountModal(this._addAccount, this._validateAccountName);
+  final Account? _initialState;
+  final bool _autoFocus;
 
   @override
-  _NewAccountModalState createState() => _NewAccountModalState();
+  _NewAccountModalState createState() => _NewAccountModalState(_initialState);
 }
 
 class _NewAccountModalState extends State<NewAccountModal> {
+  _NewAccountModalState(Account? initState) {
+    if (initState != null) {
+      _nameController.text = initState.name;
+      _amountController.text = initState.amount.toString();
+      _backgroundColor = initState.theme.backgroundColor;
+      _textColor = initState.theme.accentColor;
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
   final _amountFocusNode = FocusNode();
 
@@ -29,7 +49,7 @@ class _NewAccountModalState extends State<NewAccountModal> {
       final newAccount = Account(name, amount,
           backgroundColor: _backgroundColor, textColor: _textColor);
 
-      widget._addAccount(newAccount);
+      widget._onSubmit(newAccount);
       Navigator.pop(context);
     }
   }
@@ -47,7 +67,8 @@ class _NewAccountModalState extends State<NewAccountModal> {
                   NameInput(
                       controller: _nameController,
                       validator: widget._validateAccountName,
-                      nextFieldFocusNode: _amountFocusNode),
+                      nextFieldFocusNode: _amountFocusNode,
+                      autoFocus: widget._autoFocus),
                   AmountInput(
                       focusNode: _amountFocusNode,
                       controller: _amountController),
@@ -141,25 +162,28 @@ class _ColorPickInputState extends State<ColorPickInput> {
 }
 
 class NameInput extends StatelessWidget {
-  const NameInput({
-    Key? key,
-    required TextEditingController controller,
-    required Function(String p1) validator,
-    required FocusNode nextFieldFocusNode,
-  })  : _controller = controller,
+  const NameInput(
+      {Key? key,
+      required TextEditingController controller,
+      required Function(String p1) validator,
+      required FocusNode nextFieldFocusNode,
+      bool autoFocus = true})
+      : _controller = controller,
         _validator = validator,
         _nextFieldFocusNode = nextFieldFocusNode,
+        _autoFocus = autoFocus,
         super(key: key);
 
   final TextEditingController _controller;
   final Function(String p1) _validator;
   final FocusNode _nextFieldFocusNode;
+  final bool _autoFocus;
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: TextFormField(
-          autofocus: true,
+          autofocus: _autoFocus,
           controller: _controller,
           keyboardType: TextInputType.name,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -174,7 +198,8 @@ class NameInput extends StatelessWidget {
             }
             return null;
           },
-          onFieldSubmitted: (value) => _nextFieldFocusNode.requestFocus(),
+          onFieldSubmitted: (value) =>
+              {if (_autoFocus) _nextFieldFocusNode.requestFocus()},
         ),
         margin: EdgeInsets.only(bottom: 10));
   }

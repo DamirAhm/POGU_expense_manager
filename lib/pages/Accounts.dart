@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/components/NewAccountModal.dart';
+import 'package:test_app/components/AccountEditingModal.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 
@@ -17,9 +17,15 @@ class _AccountsPageState extends State<AccountsPage> {
     Account('Альфа', 1000, backgroundColor: Colors.red, textColor: Colors.white)
   ]);
 
-  void addAccount(Account newAccount) {
+  void _addAccount(Account newAccount) {
     setState(() {
       _accountsController.addAccount(newAccount);
+    });
+  }
+
+  void _updateAccount(String accountId, Account updatedAccount) {
+    setState(() {
+      _accountsController.updateById(accountId, updatedAccount);
     });
   }
 
@@ -27,10 +33,29 @@ class _AccountsPageState extends State<AccountsPage> {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return NewAccountModal(addAccount, (newAccountName) {
-            print(_accountsController.findByName(newAccountName));
-            return _accountsController.findByName(newAccountName) == null;
-          });
+          return NewAccountModal(
+              onSubmit: _addAccount,
+              validateAccountName: (newAccountName) {
+                print(_accountsController.findByName(newAccountName));
+                return _accountsController.findByName(newAccountName) == null;
+              });
+        });
+  }
+
+  void _openAccountEditingModal(Account accountToUpdate) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return NewAccountModal(
+            onSubmit: (updatedAccount) =>
+                _updateAccount(accountToUpdate.id, updatedAccount),
+            validateAccountName: (newAccountName) {
+              return newAccountName == accountToUpdate.name ||
+                  _accountsController.findByName(newAccountName) == null;
+            },
+            initialState: accountToUpdate,
+            autoFocus: false,
+          );
         });
   }
 
@@ -46,30 +71,38 @@ class _AccountsPageState extends State<AccountsPage> {
         ),
         body: ListView(
             children: ListTile.divideTiles(
-                    tiles: _accountsController.accounts
-                        .map((account) => AccountTile(account)),
+                    tiles: _accountsController.accounts.map((account) =>
+                        AccountTile(
+                            account: account,
+                            onPressed: () =>
+                                _openAccountEditingModal(account))),
                     context: context)
                 .toList()));
   }
 }
 
 class AccountTile extends StatelessWidget {
-  final Account account;
-  AccountTile(this.account);
+  final Account _account;
+  final Function() _onPressed;
+  AccountTile({required Account account, required Function() onPressed})
+      : _account = account,
+        _onPressed = onPressed;
 
   @override
   Widget build(BuildContext context) {
     final _nameFontSize = TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
-        color: account.theme.accentColor);
-    final _cashFont = TextStyle(fontSize: 16, color: account.theme.accentColor);
+        color: _account.theme.accentColor);
+    final _cashFont =
+        TextStyle(fontSize: 16, color: _account.theme.accentColor);
 
     return Container(
         child: ListTile(
-          title: Text(account.name, style: _nameFontSize),
-          trailing: Text('${account.amount}', style: _cashFont),
+          title: Text(_account.name, style: _nameFontSize),
+          trailing: Text('${_account.amount}', style: _cashFont),
+          onTap: _onPressed,
         ),
-        color: account.theme.backgroundColor);
+        color: _account.theme.backgroundColor);
   }
 }

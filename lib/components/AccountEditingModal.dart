@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:test_app/modules/services/AccountsController.dart';
 
-class NewAccountModal extends StatefulWidget {
-  NewAccountModal(
+class AccountEditingModal extends StatefulWidget {
+  AccountEditingModal(
       {required Function(Account) onSubmit,
-      required Function(String) validateAccountName,
       Account? initialState,
       bool autoFocus = true})
       : _onSubmit = onSubmit,
-        _validateAccountName = validateAccountName,
         _initialState = initialState,
         _autoFocus = autoFocus;
 
   final Function(Account) _onSubmit;
-  final Function(String) _validateAccountName;
   final Account? _initialState;
   final bool _autoFocus;
 
   @override
-  _NewAccountModalState createState() => _NewAccountModalState(_initialState);
+  _AccountEditingModalState createState() =>
+      _AccountEditingModalState(_initialState);
 }
 
-class _NewAccountModalState extends State<NewAccountModal> {
-  _NewAccountModalState(Account? initState) {
+class _AccountEditingModalState extends State<AccountEditingModal> {
+  _AccountEditingModalState(Account? initState) {
     if (initState != null) {
       _nameController.text = initState.name;
       _amountController.text = initState.amount.toString();
@@ -56,42 +56,45 @@ class _NewAccountModalState extends State<NewAccountModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  NameInput(
-                      controller: _nameController,
-                      validator: widget._validateAccountName,
-                      nextFieldFocusNode: _amountFocusNode,
-                      autoFocus: widget._autoFocus),
-                  AmountInput(
-                      focusNode: _amountFocusNode,
-                      controller: _amountController),
-                  ColorPickInput(
-                      handleChange: (Color newColor) => setState(() {
-                            _backgroundColor = newColor;
-                          }),
-                      title: 'Background color',
-                      initialColor: _backgroundColor),
-                  ColorPickInput(
-                      handleChange: (Color newColor) => setState(() {
-                            _textColor = newColor;
-                          }),
-                      title: 'Text color',
-                      initialColor: _textColor),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ElevatedButton(
-                      onPressed: _handleSubmit,
-                      child: const Text('Submit'),
-                    ),
-                  ),
-                ])));
+    return Consumer<AccountsController>(
+        builder: (context, accountsController, child) => Form(
+            key: _formKey,
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      NameInput(
+                          controller: _nameController,
+                          validator: (String name) =>
+                              widget._initialState?.name == name ||
+                              accountsController.findByName(name) == null,
+                          nextFieldFocusNode: _amountFocusNode,
+                          autoFocus: widget._autoFocus),
+                      AmountInput(
+                          focusNode: _amountFocusNode,
+                          controller: _amountController),
+                      ColorPickInput(
+                          handleChange: (Color newColor) => setState(() {
+                                _backgroundColor = newColor;
+                              }),
+                          title: 'Background color',
+                          initialColor: _backgroundColor),
+                      ColorPickInput(
+                          handleChange: (Color newColor) => setState(() {
+                                _textColor = newColor;
+                              }),
+                          title: 'Text color',
+                          initialColor: _textColor),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ElevatedButton(
+                          onPressed: _handleSubmit,
+                          child: const Text('Submit'),
+                        ),
+                      ),
+                    ]))));
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_app/components/AccountEditingModal.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
@@ -11,48 +12,24 @@ class AccountsPage extends StatefulWidget {
 }
 
 class _AccountsPageState extends State<AccountsPage> {
-  final _accountsController = AccountsController(accounts: [
-    Account('Сбербанк', 2000,
-        backgroundColor: Colors.green, textColor: Colors.white),
-    Account('Альфа', 1000, backgroundColor: Colors.red, textColor: Colors.white)
-  ]);
-
-  void _addAccount(Account newAccount) {
-    setState(() {
-      _accountsController.addAccount(newAccount);
-    });
-  }
-
-  void _updateAccount(String accountId, Account updatedAccount) {
-    setState(() {
-      _accountsController.updateById(accountId, updatedAccount);
-    });
-  }
-
-  void _openNewAccountModal() {
+  void _openNewAccountModal(AccountsController accountsController) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return NewAccountModal(
-              onSubmit: _addAccount,
-              validateAccountName: (newAccountName) {
-                print(_accountsController.findByName(newAccountName));
-                return _accountsController.findByName(newAccountName) == null;
-              });
+          return AccountEditingModal(
+              onSubmit: (Account newAccount) =>
+                  accountsController.addAccount(newAccount));
         });
   }
 
-  void _openAccountEditingModal(Account accountToUpdate) {
+  void _openAccountEditingModal(
+      AccountsController accountController, Account accountToUpdate) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return NewAccountModal(
-            onSubmit: (updatedAccount) =>
-                _updateAccount(accountToUpdate.id, updatedAccount),
-            validateAccountName: (newAccountName) {
-              return newAccountName == accountToUpdate.name ||
-                  _accountsController.findByName(newAccountName) == null;
-            },
+          return AccountEditingModal(
+            onSubmit: (Account updatedAccount) => accountController.updateById(
+                accountToUpdate.id, updatedAccount),
             initialState: accountToUpdate,
             autoFocus: false,
           );
@@ -61,23 +38,26 @@ class _AccountsPageState extends State<AccountsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text('Cash accounts'),
-          actions: [
-            IconButton(onPressed: _openNewAccountModal, icon: Icon(Icons.add))
-          ],
-        ),
-        body: ListView(
-            children: ListTile.divideTiles(
-                    tiles: _accountsController.accounts.map((account) =>
-                        AccountTile(
-                            account: account,
-                            onPressed: () =>
-                                _openAccountEditingModal(account))),
-                    context: context)
-                .toList()));
+    return Consumer<AccountsController>(
+        builder: (context, accountsController, child) => Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              title: Text('Cash accounts'),
+              actions: [
+                IconButton(
+                    onPressed: () => _openNewAccountModal(accountsController),
+                    icon: Icon(Icons.add))
+              ],
+            ),
+            body: ListView(
+                children: ListTile.divideTiles(
+                        tiles: accountsController.accounts.map((account) =>
+                            AccountTile(
+                                account: account,
+                                onPressed: () => _openAccountEditingModal(
+                                    accountsController, account))),
+                        context: context)
+                    .toList())));
   }
 }
 

@@ -6,7 +6,7 @@ class AccountsController extends ChangeNotifier {
 
   AccountsController({List<Account>? accounts}) {
     if (accounts != null) {
-      this._accounts.addAll(accounts);
+      _accounts.addAll(accounts);
     }
   }
 
@@ -24,8 +24,16 @@ class AccountsController extends ChangeNotifier {
     final indexOfAccount = findIndex(id);
 
     if (indexOfAccount != -1) {
-      _accounts
-          .replaceRange(indexOfAccount, indexOfAccount + 1, [updatedAccount]);
+      _accounts[indexOfAccount] = updatedAccount;
+      notifyListeners();
+    }
+  }
+
+  void changeAmountById(String id, int newAmount) {
+    final accountToUpdate = findById(id);
+
+    if (accountToUpdate != null) {
+      accountToUpdate.amount = newAmount;
       notifyListeners();
     }
   }

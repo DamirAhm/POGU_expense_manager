@@ -79,19 +79,19 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
                           handleChange: (Color newColor) => setState(() {
                                 _backgroundColor = newColor;
                               }),
-                          title: 'Background color',
+                          title: 'Цвет фона',
                           initialColor: _backgroundColor),
                       ColorPickInput(
                           handleChange: (Color newColor) => setState(() {
                                 _textColor = newColor;
                               }),
-                          title: 'Text color',
+                          title: 'Цвет текста',
                           initialColor: _textColor),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
                           onPressed: _handleSubmit,
-                          child: const Text('Submit'),
+                          child: const Text('Подтвердить'),
                         ),
                       ),
                     ]))));
@@ -134,7 +134,7 @@ class _ColorPickInputState extends State<ColorPickInput> {
           onPressed: () => showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Pick a color!'),
+                  title: const Text('Изменить цвет'),
                   content: SingleChildScrollView(
                     child: MaterialPicker(
                       pickerColor: _pickerColor,
@@ -144,7 +144,7 @@ class _ColorPickInputState extends State<ColorPickInput> {
                   ),
                   actions: <Widget>[
                     ElevatedButton(
-                      child: const Text('Got it'),
+                      child: const Text('Изменить'),
                       onPressed: () {
                         widget._handleChange(_pickerColor);
                         Navigator.of(context).pop();
@@ -191,13 +191,13 @@ class NameInput extends StatelessWidget {
           keyboardType: TextInputType.name,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: const InputDecoration(
-            hintText: 'Enter account name',
+            hintText: 'Введите название счёта',
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter some text';
+              return 'Введите что-нибудь';
             } else if (!_validator(value)) {
-              return 'Account with the same name already exists';
+              return 'Счёт с таким названием уже существует';
             }
             return null;
           },
@@ -228,7 +228,7 @@ class AmountInput extends StatelessWidget {
           controller: _controller,
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
-            hintText: 'Enter amount of money on this account',
+            hintText: 'Введите количество денег на счёте',
           ),
         ),
         margin: EdgeInsets.only(bottom: 10));

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/components/AccountEditingModal.dart';
+import 'package:test_app/components/AppDrawer.dart';
+import 'package:test_app/components/MyScaffold.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 
@@ -12,7 +14,9 @@ class AccountsPage extends StatefulWidget {
 }
 
 class _AccountsPageState extends State<AccountsPage> {
-  void _openNewAccountModal(AccountsController accountsController) {
+  void _openNewAccountModal() {
+    final accountsController =
+        Provider.of<AccountsController>(context, listen: false);
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -22,13 +26,13 @@ class _AccountsPageState extends State<AccountsPage> {
         });
   }
 
-  void _openAccountEditingModal(
-      AccountsController accountController, Account accountToUpdate) {
+  void _openAccountEditingModal(Account accountToUpdate) {
+    final accountsController = Provider.of<AccountsController>(context);
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
           return AccountEditingModal(
-            onSubmit: (Account updatedAccount) => accountController.updateById(
+            onSubmit: (Account updatedAccount) => accountsController.updateById(
                 accountToUpdate.id, updatedAccount),
             initialState: accountToUpdate,
             autoFocus: false,
@@ -39,25 +43,23 @@ class _AccountsPageState extends State<AccountsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AccountsController>(
-        builder: (context, accountsController, child) => Scaffold(
-            resizeToAvoidBottomInset: true,
-            appBar: AppBar(
-              title: Text('Cash accounts'),
+        builder: (context, accountsController, child) => MyScaffold(
+              title: 'Счета',
               actions: [
                 IconButton(
-                    onPressed: () => _openNewAccountModal(accountsController),
+                    onPressed: () => _openNewAccountModal(),
                     icon: Icon(Icons.add))
               ],
-            ),
-            body: ListView(
-                children: ListTile.divideTiles(
-                        tiles: accountsController.accounts.map((account) =>
-                            AccountTile(
-                                account: account,
-                                onPressed: () => _openAccountEditingModal(
-                                    accountsController, account))),
-                        context: context)
-                    .toList())));
+              body: ListView(
+                  children: ListTile.divideTiles(
+                          tiles: accountsController.accounts.map((account) =>
+                              AccountTile(
+                                  account: account,
+                                  onPressed: () =>
+                                      _openAccountEditingModal(account))),
+                          context: context)
+                      .toList()),
+            ));
   }
 }
 

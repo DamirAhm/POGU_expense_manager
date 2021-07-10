@@ -2,19 +2,26 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:test_app/utils/random.dart';
 
 class Account {
-  String name;
-  late String id;
-  int amount;
+  final String _name;
+  late final String _id;
+  int _amount;
 
   late ThemeData theme;
 
-  Account(this.name, this.amount,
+  Account(this._name, this._amount,
       {textColor = Colors.black, backgroundColor = Colors.white}) {
-    final random = Random();
-    id = random.nextInt(1000000000).toRadixString(16);
+    _id = getRandomId();
 
     theme = ThemeData(backgroundColor: backgroundColor, accentColor: textColor);
   }
+
+  String get name => this._name;
+
+  String get id => this._id;
+
+  int get amount => this._amount;
+  set amount(int amount) => this._amount = amount;
 }

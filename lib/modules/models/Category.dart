@@ -7,6 +7,12 @@ class Category {
 
   final String _name;
   final IconData _icon;
+  bool picked = false;
+
+  bool togglePicked() {
+    picked = !picked;
+    return picked;
+  }
 
   String get name => this._name;
   IconData get icon => this._icon;

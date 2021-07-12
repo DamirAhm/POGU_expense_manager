@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test_app/components/CategoriesFilterModal.dart';
 import 'package:test_app/components/MyScaffold.dart';
 import 'package:test_app/components/SpendCreationModal.dart';
+import 'package:test_app/modules/models/Category.dart';
 import 'package:test_app/modules/models/Spend.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
+import 'package:test_app/modules/services/CategoriesController.dart';
 import 'package:test_app/modules/services/SpendsController.dart';
 
 class SpendsPage extends StatefulWidget {
@@ -29,22 +32,40 @@ class _SpendsPageState extends State<SpendsPage> {
             }));
   }
 
+  _openCategoriesFilterModal() {
+    final categoryController =
+        Provider.of<CategoriesController>(context, listen: false);
+
+    showModalBottomSheet(
+        context: context, builder: (context) => CategoriesFilterModal());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<SpendsController>(
-        builder: (context, spendsController, child) => MyScaffold(
-            title: 'Траты',
-            actions: [
-              IconButton(
-                  onPressed: _openSpendCreationModal, icon: Icon(Icons.add)),
-              IconButton(
-                  onPressed: () {}, icon: Icon(Icons.filter_alt_outlined))
-            ],
-            body: Container(
-                child: ListView(
-                    children: spendsController.spends
-                        .map((spend) => SpendTile(spend))
-                        .toList()))));
+    return Consumer2<SpendsController, CategoriesController>(
+        builder: (context, spendsController, categoriesController, child) =>
+            MyScaffold(
+                title: 'Траты',
+                actions: [
+                  IconButton(
+                      onPressed: _openSpendCreationModal,
+                      icon: Icon(Icons.add)),
+                  IconButton(
+                      onPressed: _openCategoriesFilterModal,
+                      icon: Icon(Icons.filter_alt_outlined))
+                ],
+                body: Container(
+                    child: ListView(
+                        children: spendsController.spends
+                            .where((spend) =>
+                                categoriesController.pickedCategories.length ==
+                                    0 ||
+                                categoriesController
+                                        .findByName(spend.category.name)
+                                        ?.picked ==
+                                    true)
+                            .map((spend) => SpendTile(spend))
+                            .toList()))));
   }
 }
 

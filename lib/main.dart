@@ -16,7 +16,11 @@ final initialAccounts = [
   Account('Альфа', 1000, backgroundColor: Colors.red, textColor: Colors.white)
 ];
 final initialCategories = {
-  "food": Category(name: 'Еда', icon: Icons.food_bank)
+  "food": Category(name: 'Еда', icon: Icons.food_bank),
+  "clothes": Category(name: "Одежда", icon: Icons.checkroom),
+  "credits": Category(name: "Кредиты", icon: Icons.local_atm),
+  "health": Category(name: "Здоровье", icon: Icons.local_hospital_outlined),
+  "fun": Category(name: "Развлечения", icon: Icons.local_movies_rounded)
 };
 final initialSpends = [
   Spend(
@@ -40,7 +44,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Word pair generator',
-        theme: ThemeData(primaryColor: Colors.white),
+        theme: ThemeData(),
         initialRoute: '/',
         routes: {
           '/': (context) => AccountsPage(),

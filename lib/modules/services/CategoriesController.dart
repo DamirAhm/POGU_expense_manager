@@ -15,10 +15,19 @@ class CategoriesController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void removeSpend(String SpendId) {
-  //   _spends.removeWhere((Category) => Category.id == SpendId);
-  //   notifyListeners();
-  // }
+  void removeCategory(String categoryName) {
+    _categories.removeWhere((category) => category.name == categoryName);
+    notifyListeners();
+  }
+
+  void toggleCategoryPicked(String categoryName) {
+    final categoryToPick = findByName(categoryName);
+
+    if (categoryToPick != null) {
+      categoryToPick.togglePicked();
+      notifyListeners();
+    }
+  }
 
   Category? findByName(String name) {
     final filteredSpends =
@@ -27,4 +36,6 @@ class CategoriesController extends ChangeNotifier {
   }
 
   List<Category> get categories => _categories;
+  List<Category> get pickedCategories =>
+      _categories.where((category) => category.picked).toList();
 }

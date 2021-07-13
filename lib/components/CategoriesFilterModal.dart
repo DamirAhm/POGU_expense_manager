@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/modules/models/Category.dart';
 import 'package:test_app/modules/services/CategoriesController.dart';
 
 class CategoriesFilterModal extends StatefulWidget {
@@ -14,7 +13,7 @@ class _CategoriesFilterModalState extends State<CategoriesFilterModal> {
     if (picked) {
       return ButtonStyle(
           backgroundColor:
-              MaterialStateProperty.all(Theme.of(context).cardColor));
+              MaterialStateProperty.all(Theme.of(context).primaryColor));
     } else {
       return ButtonStyle(
           backgroundColor:
@@ -43,14 +42,14 @@ class _CategoriesFilterModalState extends State<CategoriesFilterModal> {
                                       size: 20,
                                       color: category.picked
                                           ? Theme.of(context).accentColor
-                                          : Theme.of(context).cardColor),
+                                          : Theme.of(context).primaryColor),
                                   title: Text(category.name,
                                       style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                           color:
-                                              category.picked ? Theme.of(context).accentColor : Theme.of(context).cardColor)))),
-                          decoration: BoxDecoration(border: Border.all(color: Theme.of(context).accentColor, width: 2))))
+                                              category.picked ? Theme.of(context).accentColor : Theme.of(context).primaryColor)))),
+                          decoration: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor, width: 2), borderRadius: BorderRadius.all(Radius.circular(10)))))
                       .toList()),
             ));
   }

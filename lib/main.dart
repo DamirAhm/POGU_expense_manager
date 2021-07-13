@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Word pair generator',
-        theme: ThemeData(),
+        theme: ThemeData(primaryColor: Colors.blue, accentColor: Colors.white),
         initialRoute: '/',
         routes: {
           '/': (context) => AccountsPage(),

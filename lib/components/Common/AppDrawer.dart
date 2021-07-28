@@ -17,16 +17,15 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Счета'),
-            onTap: () {
-              Navigator.pushNamed(context, '/');
-            },
+            onTap: () => Navigator.pushNamed(context, '/'),
           ),
           ListTile(
             title: Text('Траты'),
-            onTap: () {
-              Navigator.pushNamed(context, '/spends');
-            },
+            onTap: () => Navigator.pushNamed(context, '/spends'),
           ),
+          ListTile(
+              title: Text('Долги'),
+              onTap: () => Navigator.pushNamed(context, '/debts'))
         ],
       ),
     );

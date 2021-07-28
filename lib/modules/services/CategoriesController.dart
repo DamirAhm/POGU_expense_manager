@@ -30,8 +30,8 @@ class CategoriesController extends ChangeNotifier {
   }
 
   Category? findByName(String name) {
-    final filteredSpends =
-        _categories.where((category) => category.name == name);
+    final filteredSpends = _categories
+        .where((category) => category.name.toLowerCase() == name.toLowerCase());
     return filteredSpends.length > 0 ? filteredSpends.first : null;
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/components/AccountEditingModal.dart';
-import 'package:test_app/components/AppDrawer.dart';
-import 'package:test_app/components/MyScaffold.dart';
+import 'package:test_app/components/Accounts/AccountEditingModal.dart';
+import 'package:test_app/components/Common/AppDrawer.dart';
+import 'package:test_app/components/Common/MyScaffold.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 
@@ -32,8 +32,8 @@ class _AccountsPageState extends State<AccountsPage> {
         context: context,
         builder: (BuildContext context) {
           return AccountEditingModal(
-            onSubmit: (Account updatedAccount) => accountsController.updateById(
-                accountToUpdate.id, updatedAccount),
+            onSubmit: (Account updatedAccount) => accountsController
+                .updateByName(accountToUpdate.name, updatedAccount),
             initialState: accountToUpdate,
             autoFocus: false,
           );
@@ -65,8 +65,8 @@ class _AccountsPageState extends State<AccountsPage> {
 
 class AccountTile extends StatelessWidget {
   final Account _account;
-  final Function() _onPressed;
-  AccountTile({required Account account, required Function() onPressed})
+  final void Function() _onPressed;
+  AccountTile({required Account account, required void Function() onPressed})
       : _account = account,
         _onPressed = onPressed;
 

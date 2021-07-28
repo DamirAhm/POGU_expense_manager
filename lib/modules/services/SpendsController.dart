@@ -15,17 +15,10 @@ class SpendsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void removeSpend(String SpendId) {
-  //   _spends.removeWhere((Spend) => Spend.id == SpendId);
-  //   notifyListeners();
-  // }
-
   Spend? findById(String id) {
     final filteredSpends = _spends.where((spend) => spend.id == id);
     return filteredSpends.length > 0 ? filteredSpends.first : null;
   }
-
-  // int findIndex(String id) => _spends.indexWhere((spend) => spend.id == id);
 
   List<Spend> get spends => _spends;
 }

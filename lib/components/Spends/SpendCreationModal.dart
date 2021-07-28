@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:select_dialog/select_dialog.dart';
+import 'package:test_app/components/Common/AccountSelect.dart';
+import 'package:test_app/components/Common/FormInput.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/models/Category.dart';
 import 'package:test_app/modules/models/Spend.dart';
@@ -8,15 +10,10 @@ import 'package:test_app/modules/services/AccountsController.dart';
 import 'package:test_app/modules/services/CategoriesController.dart';
 
 class SpendCreationModal extends StatefulWidget {
-  SpendCreationModal(
-      {required Function(Spend) onSubmit,
-      Spend? initialState,
-      bool autoFocus = true})
-      : _onSubmit = onSubmit,
-        _autoFocus = autoFocus;
+  SpendCreationModal({required void Function(Spend) onSubmit})
+      : _onSubmit = onSubmit;
 
-  final Function(Spend) _onSubmit;
-  final bool _autoFocus;
+  final void Function(Spend) _onSubmit;
 
   @override
   _SpendCreationModalState createState() => _SpendCreationModalState();
@@ -25,13 +22,10 @@ class SpendCreationModal extends StatefulWidget {
 class _SpendCreationModalState extends State<SpendCreationModal> {
   final _formKey = GlobalKey<FormState>();
 
-  final _amountFocusNode = FocusNode();
   final _amountController = TextEditingController();
 
   Account? _from;
   Category? _category;
-
-  int _selectedIndex = 0;
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
@@ -56,9 +50,17 @@ class _SpendCreationModalState extends State<SpendCreationModal> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          AmountInput(
-                              focusNode: _amountFocusNode,
-                              controller: _amountController),
+                          //Amount
+                          FormInput(
+                            controller: _amountController,
+                            hintText: 'Введите сумму',
+                            keyboardType: TextInputType.number,
+                            validator: (String value) {
+                              if (int.parse(value) < 0) {
+                                return 'Сумма не может быть отрицательной';
+                              }
+                            },
+                          ),
                           AccountSelect((acc) => setState(() => _from = acc)),
                           CategorySelect((category) =>
                               setState(() => _category = category)),
@@ -73,101 +75,9 @@ class _SpendCreationModalState extends State<SpendCreationModal> {
   }
 }
 
-class AmountInput extends StatelessWidget {
-  const AmountInput({
-    Key? key,
-    required FocusNode focusNode,
-    required TextEditingController controller,
-  })  : _focusNode = focusNode,
-        _controller = controller,
-        super(key: key);
-
-  final FocusNode _focusNode;
-  final TextEditingController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: TextFormField(
-          focusNode: _focusNode,
-          controller: _controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            hintText: 'Введите сумму траты',
-          ),
-        ),
-        margin: EdgeInsets.only(bottom: 10));
-  }
-}
-
-class AccountSelect extends StatefulWidget {
-  AccountSelect(this._onSaved, {Key? key}) : super(key: key);
-
-  final Function(Account) _onSaved;
-
-  @override
-  _AccountSelectState createState() => _AccountSelectState();
-}
-
-class _AccountSelectState extends State<AccountSelect> {
-  Account? _selected;
-
-  _openAccountSelectModal(BuildContext context, FormFieldState<Account> state) {
-    final accountsController =
-        Provider.of<AccountsController>(context, listen: false);
-    Account? init = _selected;
-
-    SelectDialog.showModal<Account>(
-      context,
-      label: "Выберите счёт",
-      selectedValue: init,
-      items: accountsController.accounts,
-      itemBuilder: (BuildContext context, Account account, _) => Container(
-          child: ListTile(
-        title: Text(account.name),
-        trailing: Text('${account.amount}'),
-      )),
-      onChange: (Account selected) {
-        state.didChange(selected);
-        state.save();
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FormField<Account>(
-      initialValue: null,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      builder: (FormFieldState<Account> state) {
-        return Column(
-          children: <Widget>[
-            Row(children: [
-              if (state.value != null)
-                Row(children: [
-                  Text('Счёт: ', style: TextStyle(fontSize: 18)),
-                  Text(state.value!.name, style: TextStyle(fontSize: 18))
-                ]),
-              TextButton(
-                  onPressed: () => _openAccountSelectModal(context, state),
-                  child:
-                      Text(state.value == null ? 'Выберите счёт' : 'Изменить'))
-            ]),
-            state.errorText == null
-                ? Text("")
-                : Text(state.errorText!, style: TextStyle(color: Colors.red)),
-          ],
-        );
-      },
-      validator: (val) => val != null ? null : "Выберите счёт",
-      onSaved: (val) => widget._onSaved(val!),
-    );
-  }
-}
-
 class CategorySelect extends StatefulWidget {
   CategorySelect(this._onSaved, {Key? key}) : super(key: key);
-  final Function(Category) _onSaved;
+  final void Function(Category) _onSaved;
 
   @override
   _CategorySelectState createState() => _CategorySelectState();

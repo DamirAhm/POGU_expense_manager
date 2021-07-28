@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test_app/components/Common/FormInput.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 
 class AccountEditingModal extends StatefulWidget {
   AccountEditingModal(
-      {required Function(Account) onSubmit,
+      {required void Function(Account) onSubmit,
       Account? initialState,
       bool autoFocus = true})
       : _onSubmit = onSubmit,
         _initialState = initialState,
         _autoFocus = autoFocus;
 
-  final Function(Account) _onSubmit;
+  final void Function(Account) _onSubmit;
   final Account? _initialState;
   final bool _autoFocus;
 
@@ -46,8 +47,11 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
       final name = _nameController.text;
       final amount = int.parse(_amountController.text);
 
-      final newAccount = Account(name, amount,
-          backgroundColor: _backgroundColor, textColor: _textColor);
+      final newAccount = Account(
+          name: name,
+          amount: amount,
+          backgroundColor: _backgroundColor,
+          textColor: _textColor);
 
       widget._onSubmit(newAccount);
       Navigator.pop(context);
@@ -65,16 +69,31 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      NameInput(
-                          controller: _nameController,
-                          validator: (String name) =>
-                              widget._initialState?.name == name ||
-                              accountsController.findByName(name) == null,
-                          nextFieldFocusNode: _amountFocusNode,
-                          autoFocus: widget._autoFocus),
-                      AmountInput(
-                          focusNode: _amountFocusNode,
-                          controller: _amountController),
+                      FormInput(
+                        controller: _nameController,
+                        hintText: 'Введите название счёта',
+                        validator: (String name) {
+                          if (widget._initialState?.name != name &&
+                              accountsController.findByName(name) != null) {
+                            return 'Счёт с таким названием уже существует';
+                          }
+                        },
+                        nextFieldFocusNode: _amountFocusNode,
+                        autoFocus: true,
+                        keyboardType: TextInputType.name,
+                      ),
+                      //Amount
+                      FormInput(
+                        controller: _amountController,
+                        hintText: 'Введите количество денег на счету',
+                        keyboardType: TextInputType.number,
+                        validator: (String value) {
+                          if (int.parse(value) < 0) {
+                            return 'Количество денег не может быть отрицательной';
+                          }
+                        },
+                        focusNode: _amountFocusNode,
+                      ),
                       ColorPickInput(
                           handleChange: (Color newColor) => setState(() {
                                 _backgroundColor = newColor;
@@ -101,7 +120,7 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
 class ColorPickInput extends StatefulWidget {
   ColorPickInput(
       {Key? key,
-      required Function(Color) handleChange,
+      required void Function(Color) handleChange,
       required String title,
       Color initialColor = Colors.white})
       : _handleChange = handleChange,
@@ -111,7 +130,7 @@ class ColorPickInput extends StatefulWidget {
 
   final String _title;
   final Color _initialColor;
-  final Function(Color) _handleChange;
+  final void Function(Color) _handleChange;
 
   @override
   _ColorPickInputState createState() => _ColorPickInputState(_initialColor);
@@ -161,76 +180,5 @@ class _ColorPickInputState extends State<ColorPickInput> {
                 color: _pickerColor),
           ))
     ]);
-  }
-}
-
-class NameInput extends StatelessWidget {
-  const NameInput(
-      {Key? key,
-      required TextEditingController controller,
-      required Function(String p1) validator,
-      required FocusNode nextFieldFocusNode,
-      bool autoFocus = true})
-      : _controller = controller,
-        _validator = validator,
-        _nextFieldFocusNode = nextFieldFocusNode,
-        _autoFocus = autoFocus,
-        super(key: key);
-
-  final TextEditingController _controller;
-  final Function(String p1) _validator;
-  final FocusNode _nextFieldFocusNode;
-  final bool _autoFocus;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: TextFormField(
-          autofocus: _autoFocus,
-          controller: _controller,
-          keyboardType: TextInputType.name,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: const InputDecoration(
-            hintText: 'Введите название счёта',
-          ),
-          validator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return 'Введите что-нибудь';
-            } else if (!_validator(value)) {
-              return 'Счёт с таким названием уже существует';
-            }
-            return null;
-          },
-          onFieldSubmitted: (value) =>
-              {if (_autoFocus) _nextFieldFocusNode.requestFocus()},
-        ),
-        margin: EdgeInsets.only(bottom: 10));
-  }
-}
-
-class AmountInput extends StatelessWidget {
-  const AmountInput({
-    Key? key,
-    required FocusNode focusNode,
-    required TextEditingController controller,
-  })  : _focusNode = focusNode,
-        _controller = controller,
-        super(key: key);
-
-  final FocusNode _focusNode;
-  final TextEditingController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: TextFormField(
-          focusNode: _focusNode,
-          controller: _controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            hintText: 'Введите количество денег на счёте',
-          ),
-        ),
-        margin: EdgeInsets.only(bottom: 10));
   }
 }

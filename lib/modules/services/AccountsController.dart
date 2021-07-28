@@ -15,13 +15,14 @@ class AccountsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeAccount(String accountId) {
-    _accounts.removeWhere((account) => account.id == accountId);
+  void removeAccount(String accountName) {
+    _accounts.removeWhere((account) => account.name == accountName);
     notifyListeners();
   }
 
-  void updateById(String id, Account updatedAccount) {
-    final indexOfAccount = findIndex(id);
+  void updateByName(String name, Account updatedAccount) {
+    final indexOfAccount =
+        _accounts.indexWhere((account) => account.name == name);
 
     if (indexOfAccount != -1) {
       _accounts[indexOfAccount] = updatedAccount;
@@ -29,8 +30,8 @@ class AccountsController extends ChangeNotifier {
     }
   }
 
-  void changeAmountById(String id, int newAmount) {
-    final accountToUpdate = findById(id);
+  void changeAmountByName(String name, int newAmount) {
+    final accountToUpdate = findByName(name);
 
     if (accountToUpdate != null) {
       accountToUpdate.amount = newAmount;
@@ -43,14 +44,6 @@ class AccountsController extends ChangeNotifier {
         .where((account) => account.name.toLowerCase() == name.toLowerCase());
     return filteredAccounts.length > 0 ? filteredAccounts.first : null;
   }
-
-  Account? findById(String id) {
-    final filteredAccounts = _accounts.where((account) => account.id == id);
-    return filteredAccounts.length > 0 ? filteredAccounts.first : null;
-  }
-
-  int findIndex(String id) =>
-      _accounts.indexWhere((account) => account.id == id);
 
   List<Account> get accounts => _accounts;
 }

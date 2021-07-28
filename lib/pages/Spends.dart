@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/components/CategoriesFilterModal.dart';
-import 'package:test_app/components/MyScaffold.dart';
-import 'package:test_app/components/SpendCreationModal.dart';
+import 'package:test_app/components/Spends/CategoriesFilterModal.dart';
+import 'package:test_app/components/Common/MyScaffold.dart';
+import 'package:test_app/components/Spends/SpendCreationModal.dart';
 import 'package:test_app/modules/models/Category.dart';
 import 'package:test_app/modules/models/Spend.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
@@ -27,8 +27,8 @@ class _SpendsPageState extends State<SpendsPage> {
         context: context,
         builder: (context) => SpendCreationModal(onSubmit: (newSpend) {
               spendsController.addSpend(newSpend);
-              accountsController.changeAmountById(
-                  newSpend.from.id, newSpend.from.amount - newSpend.amount);
+              accountsController.changeAmountByName(
+                  newSpend.from.name, newSpend.from.amount - newSpend.amount);
             }));
   }
 
@@ -48,11 +48,11 @@ class _SpendsPageState extends State<SpendsPage> {
                 title: 'Траты',
                 actions: [
                   IconButton(
+                      onPressed: _openCategoriesFilterModal,
+                      icon: Icon(Icons.filter_alt_outlined)),
+                  IconButton(
                       onPressed: _openSpendCreationModal,
                       icon: Icon(Icons.add)),
-                  IconButton(
-                      onPressed: _openCategoriesFilterModal,
-                      icon: Icon(Icons.filter_alt_outlined))
                 ],
                 body: Container(
                     child: ListView(

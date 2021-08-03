@@ -55,8 +55,10 @@ class _SpendCreationModalState extends State<SpendCreationModal> {
                             controller: _amountController,
                             hintText: 'Введите сумму',
                             keyboardType: TextInputType.number,
-                            validator: (String value) {
-                              if (int.parse(value) < 0) {
+                            validator: (String? value) {
+                              if (value == null || value.trim() == '') {
+                                return 'Введите что-нибудь';
+                              } else if (int.parse(value) < 0) {
                                 return 'Сумма не может быть отрицательной';
                               }
                             },

@@ -30,11 +30,17 @@ class AccountsController extends ChangeNotifier {
     }
   }
 
-  void changeAmountByName(String name, int newAmount) {
+  void changeAmountByName(String name, {int? newAmount, int? diff}) {
     final accountToUpdate = findByName(name);
 
     if (accountToUpdate != null) {
-      accountToUpdate.amount = newAmount;
+      if (newAmount != null) {
+        accountToUpdate.amount = newAmount;
+      } else if (diff != null) {
+        accountToUpdate.amount += diff;
+      } else {
+        throw new TypeError();
+      }
       notifyListeners();
     }
   }

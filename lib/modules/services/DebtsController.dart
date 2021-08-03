@@ -31,6 +31,7 @@ class DebtsController extends ChangeNotifier {
 
     if (indexOfDebt != -1) {
       _debts[indexOfDebt] = updatedDebt;
+      notifyListeners();
     }
   }
 

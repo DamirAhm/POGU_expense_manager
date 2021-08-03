@@ -9,8 +9,8 @@ class FormInput extends StatelessWidget {
       bool autoFocus = true,
       required String hintText,
       TextInputType keyboardType = TextInputType.name,
-      String initialValue = '',
-      FocusNode? focusNode})
+      FocusNode? focusNode,
+      void Function(String)? onChanged})
       : _controller = controller,
         _validator = validator,
         _nextFieldFocusNode = nextFieldFocusNode,
@@ -18,7 +18,7 @@ class FormInput extends StatelessWidget {
         _hintText = hintText,
         _keyboardType = keyboardType,
         _focusNode = focusNode,
-        _initialValue = initialValue,
+        _onChanged = onChanged,
         super(key: key);
 
   final TextEditingController _controller;
@@ -28,13 +28,13 @@ class FormInput extends StatelessWidget {
   final String _hintText;
   final TextInputType _keyboardType;
   final FocusNode? _focusNode;
-  final String _initialValue;
+  final void Function(String value)? _onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: TextFormField(
-          initialValue: _initialValue,
+          onChanged: _onChanged,
           focusNode: _focusNode,
           autofocus: _autoFocus,
           controller: _controller,

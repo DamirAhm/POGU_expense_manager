@@ -72,14 +72,16 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
                       FormInput(
                         controller: _nameController,
                         hintText: 'Введите название счёта',
-                        validator: (String name) {
-                          if (widget._initialState?.name != name &&
-                              accountsController.findByName(name) != null) {
+                        validator: (String? value) {
+                          if (value == null || value.trim() == '') {
+                            return 'Введите что-нибудь';
+                          } else if (widget._initialState?.name != value &&
+                              accountsController.findByName(value) != null) {
                             return 'Счёт с таким названием уже существует';
                           }
                         },
                         nextFieldFocusNode: _amountFocusNode,
-                        autoFocus: true,
+                        autoFocus: widget._autoFocus,
                         keyboardType: TextInputType.name,
                       ),
                       //Amount
@@ -87,8 +89,10 @@ class _AccountEditingModalState extends State<AccountEditingModal> {
                         controller: _amountController,
                         hintText: 'Введите количество денег на счету',
                         keyboardType: TextInputType.number,
-                        validator: (String value) {
-                          if (int.parse(value) < 0) {
+                        validator: (String? value) {
+                          if (value == null || value.trim() == '') {
+                            return 'Введите что-нибудь';
+                          } else if (int.parse(value) < 0) {
                             return 'Количество денег не может быть отрицательной';
                           }
                         },

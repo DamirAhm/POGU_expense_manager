@@ -2,6 +2,23 @@ import 'package:test_app/modules/models/Account.dart';
 
 enum DebtType { owe, lend }
 
+String getDebtTypeName(DebtType type) {
+  switch (type) {
+    case DebtType.lend:
+      {
+        return 'Дать в долг';
+      }
+    case DebtType.owe:
+      {
+        return 'Взять в долг';
+      }
+    default:
+      {
+        throw new TypeError();
+      }
+  }
+}
+
 class Debt {
   late int _amount;
   late String _name;

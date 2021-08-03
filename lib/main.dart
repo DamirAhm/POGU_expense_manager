@@ -36,9 +36,9 @@ final initialSpends = [
   Spend(from: initialAccounts[0], amount: 100, category: initialCategories[0])
 ];
 final initialDebts = [
-  Debt(amount: 200, name: "Кирилл"),
-  Debt(amount: 260, name: "Даниил"),
-  Debt(amount: 400, name: "Денис"),
+  Debt(amount: 200, name: "Кирилл", description: '', type: DebtType.lend),
+  Debt(amount: 260, name: "Даниил", description: '', type: DebtType.lend),
+  Debt(amount: 400, name: "Денис", description: '', type: DebtType.lend),
 ];
 
 void main() => runApp(MultiProvider(providers: [

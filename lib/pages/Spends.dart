@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:test_app/components/Spends/CategoriesFilterModal.dart';
 import 'package:test_app/components/Common/MyScaffold.dart';
 import 'package:test_app/components/Spends/SpendCreationModal.dart';
-import 'package:test_app/modules/models/Category.dart';
 import 'package:test_app/modules/models/Spend.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 import 'package:test_app/modules/services/CategoriesController.dart';
@@ -27,15 +26,12 @@ class _SpendsPageState extends State<SpendsPage> {
         context: context,
         builder: (context) => SpendCreationModal(onSubmit: (newSpend) {
               spendsController.addSpend(newSpend);
-              accountsController.changeAmountByName(
-                  newSpend.from.name, newSpend.from.amount - newSpend.amount);
+              accountsController.changeAmountByName(newSpend.from.name,
+                  diff: -newSpend.amount);
             }));
   }
 
   _openCategoriesFilterModal() {
-    final categoryController =
-        Provider.of<CategoriesController>(context, listen: false);
-
     showModalBottomSheet(
         context: context, builder: (context) => CategoriesFilterModal());
   }

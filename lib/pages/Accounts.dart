@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/components/Accounts/AccountEditingModal.dart';
-import 'package:test_app/components/Common/AppDrawer.dart';
 import 'package:test_app/components/Common/MyScaffold.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';

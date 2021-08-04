@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/components/Debts/DebtEditingModal.dart';
 import 'package:test_app/components/Common/MyScaffold.dart';
@@ -141,12 +142,27 @@ class DebtTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Slidable(
+      actionPane: SlidableScrollActionPane(),
+      // closeOnScroll: true,
       child: ListTile(
         onTap: _onPressed,
         title: Text(_debt.name),
         trailing: Text(_debt.amount.toString()),
       ),
+      secondaryActions: [
+        IconSlideAction(
+          color: Colors.red,
+          foregroundColor: Colors.white,
+          icon: Icons.delete,
+          onTap: () {
+            final debtsController =
+                Provider.of<DebtsController>(context, listen: false);
+
+            debtsController.removeDebt(_debt.name);
+          },
+        )
+      ],
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/components/Accounts/AccountEditingModal.dart';
 import 'package:test_app/components/Common/MyScaffold.dart';
 import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
+import 'package:test_app/utils/showConfirmDialog.dart';
 
 class AccountsPage extends StatefulWidget {
   AccountsPage({Key? key}) : super(key: key);
@@ -78,12 +80,41 @@ class AccountTile extends StatelessWidget {
     final _cashFont =
         TextStyle(fontSize: 16, color: _account.theme.accentColor);
 
-    return Container(
-        child: ListTile(
-          title: Text(_account.name, style: _nameFontSize),
-          trailing: Text('${_account.amount}', style: _cashFont),
-          onTap: _onPressed,
-        ),
-        color: _account.theme.backgroundColor);
+    return Slidable(
+      actionPane: SlidableScrollActionPane(),
+      child: Container(
+          decoration: BoxDecoration(
+              color: _account.theme.backgroundColor,
+              border: Border.symmetric(
+                  vertical: BorderSide(
+                      color: Color.fromRGBO(0, 0, 0, 0.2), width: 1))),
+          child: ListTile(
+            title: Text(_account.name, style: _nameFontSize),
+            trailing: Text('${_account.amount}', style: _cashFont),
+            onTap: _onPressed,
+          )),
+      secondaryActions: [
+        IconSlideAction(
+          icon: Icons.delete,
+          color: Colors.red,
+          foregroundColor: Colors.white,
+          onTap: () async {
+            final userResponse = await showConfirmDialog(context,
+                title: "Вы уверены?",
+                content:
+                    "Счёт будет удален, вы уверены, что хотите продолжить?");
+
+            Navigator.pop(context);
+
+            if (userResponse) {
+              final accountsController =
+                  Provider.of<AccountsController>(context, listen: false);
+
+              accountsController.removeAccount(_account.name);
+            }
+          },
+        )
+      ],
+    );
   }
 }

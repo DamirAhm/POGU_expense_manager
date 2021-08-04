@@ -7,6 +7,7 @@ import 'package:test_app/modules/models/Account.dart';
 import 'package:test_app/modules/models/Debt.dart';
 import 'package:test_app/modules/services/AccountsController.dart';
 import 'package:test_app/modules/services/DebtsController.dart';
+import 'package:test_app/utils/showConfirmDialog.dart';
 
 class DebtsPage extends StatefulWidget {
   DebtsPage({Key? key}) : super(key: key);
@@ -155,11 +156,20 @@ class DebtTile extends StatelessWidget {
           color: Colors.red,
           foregroundColor: Colors.white,
           icon: Icons.delete,
-          onTap: () {
-            final debtsController =
-                Provider.of<DebtsController>(context, listen: false);
+          onTap: () async {
+            final userResponse = await showConfirmDialog(context,
+                title: "Вы уверены?",
+                content:
+                    "Счёт будет удален, вы уверены, что хотите продолжить?");
 
-            debtsController.removeDebt(_debt.name);
+            Navigator.pop(context);
+
+            if (userResponse) {
+              final debtsController =
+                  Provider.of<DebtsController>(context, listen: false);
+
+              debtsController.removeDebt(_debt.name);
+            }
           },
         )
       ],
